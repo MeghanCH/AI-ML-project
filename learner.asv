@@ -1,0 +1,6 @@
+% Run neural network training
+
+[eigenvectors, weights, latents ] = pca(data_compressed'); 
+setdemorandstream(491218382);
+net = patternnet(10);
+[net,tr]=train(
