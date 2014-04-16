@@ -1,12 +1,12 @@
 % Post process video/audio samples for learning
 
-clc
-clear
-close all
+% clc
+% clear
+% close all
 
 % check we can load data samples
 videodirpath = fullfile('rawTrain','video');
-%audiopath = fullfile('rawTrain','audio',); 
+audiodirpath = fullfile('rawTrain','audio'); 
       
 % Count other files in folder to determine index
 D = dir(videodirpath);
@@ -14,9 +14,11 @@ sampleCounter = 0;
 
 
 % go thru each char folder
-for charIndex=3:length(D)
+indexer = [2, 15, 23];
+for charIndex=
     
     videopath = strcat(videodirpath, '\', D(charIndex).name);
+    audiopath = strcat(audiodirpath, '\', D(charIndex).name); 
     subD = dir(videopath);
     
     % go thru each char sample 
@@ -27,15 +29,23 @@ for charIndex=3:length(D)
         load(videofile); 
 
         if(exist('videodata')) 
-            figure(sampleCounter);
-            imaqmontage(videodata);
+            %figure(sampleCounter);
+            %imaqmontage(videodata);
+        else
+            display('Invalid folder.'); 
         end
+        
 
-        %load(audio); 
-        %if(exist('audiodata')) 
-        %    figure(2);
-        %    plot(audiodata);
-        %end
+        %subD(sampleIndex).name
+%         audiofile = strcat(audiopath, '\', subD(sampleIndex).name)
+%         load(audiofile); 
+%         if(exist('audiodata')) 
+%             file  = subD(sampleIndex).name;
+%             file(end-3:end) = []; 
+%             figure(str2num(file));
+%             plot(audiodata);
+%             pause(2); 
+%         end
         
         % clean the video frames 
         % grayscale
@@ -50,10 +60,16 @@ for charIndex=3:length(D)
         
         % dump the data
         data_compressed(:,sampleCounter) = data(:);
-        temp(sampleCounter) = uint8(D(charIndex).name) - 9
-        
+        temp(sampleCounter) = uint8(D(charIndex).name) - 96;
+        temp2 = zeros(26,1);
+        temp2(temp(sampleCounter))=1;
+        label(:,sampleCounter)=temp2;
         
     end
     
-    
 end
+
+save('train2.mat','data_compressed','label')
+
+
+

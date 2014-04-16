@@ -149,6 +149,8 @@ if strcmp(get(handles.startAcquisition,'String'),'Start Acquisition')
       index_selected = get(handles.charOptions,'Value');
       list = get(handles.charOptions,'String');
       char_selected = list{index_selected};
+      
+      % currently in test folder
       videopath = fullfile('rawTrain','video', char_selected);
       audiopath = fullfile('rawTrain','audio', char_selected); 
       
@@ -161,6 +163,9 @@ if strcmp(get(handles.startAcquisition,'String'),'Start Acquisition')
       
       videodata = getdata(handles.video);
       audiodata = getaudiodata(handles.audio);
+      
+      plot(audiodata); 
+      pause(2); 
       
       % Save to folder
       save( strcat(videopath, '/', num2str(num_vidsamples+1),'.mat'), 'videodata');
