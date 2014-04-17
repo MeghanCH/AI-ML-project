@@ -4,13 +4,14 @@
 folder = 'rawTrain'; 
 videodirpath = fullfile(folder,'video');
 audiodirpath = fullfile(folder,'audio'); 
-      
+
 % Count files in folder to determine index
 D = dir(videodirpath);
 sampleCounter = 0; 
 
 % go thru each char folder
-for charIndex=3:length(D)
+%indexer = [2, 15, 23];
+for charIndex=3:length(D); 
     
     videopath = strcat(videodirpath, '\', D(charIndex).name);
     audiopath = strcat(audiodirpath, '\', D(charIndex).name); 
@@ -58,4 +59,5 @@ end
 
 save('cleanData/train.mat','video_data_compressed','audio_data_compressed',...
         'both_data_compressed','label')
+
 
