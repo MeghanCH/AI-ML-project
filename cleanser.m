@@ -10,7 +10,6 @@ D = dir(videodirpath);
 sampleCounter = 0; 
 
 % go thru each char folder
-%indexer = [2, 15, 23];
 for charIndex=3:length(D); 
     
     videopath = strcat(videodirpath, '\', D(charIndex).name);
