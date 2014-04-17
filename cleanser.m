@@ -1,61 +1,61 @@
-% Post process video/audio samples for learning
 
-clc
-clear
-close all
+% Post process video/audio samples and save compressed data
 
-% check we can load data samples
-videodirpath = fullfile('rawTrain','video');
-%audiopath = fullfile('rawTrain','audio',); 
+folder = 'rawTrain'; 
+videodirpath = fullfile(folder,'video');
+audiodirpath = fullfile(folder,'audio'); 
       
-% Count other files in folder to determine index
+% Count files in folder to determine index
 D = dir(videodirpath);
 sampleCounter = 0; 
-
 
 % go thru each char folder
 for charIndex=3:length(D)
     
     videopath = strcat(videodirpath, '\', D(charIndex).name);
+    audiopath = strcat(audiodirpath, '\', D(charIndex).name); 
     subD = dir(videopath);
     
     % go thru each char sample 
     for sampleIndex=3:length(subD)
     
         sampleCounter = sampleCounter + 1; 
-        videofile = strcat(videopath, '\', subD(sampleIndex).name)
+        videofile = strcat(videopath, '\', subD(sampleIndex).name);
+        audiofile = strcat(audiopath, '\', subD(sampleIndex).name); 
+        disp(videofile); 
         load(videofile); 
-
+        load(audiofile); 
+        
         if(exist('videodata')) 
-            figure(sampleCounter);
-            imaqmontage(videodata);
+            %figure(sampleCounter);
+            %imaqmontage(videodata);
+        else
+            disp('Invalid video data.');
         end
+        
+        if(exist('audiodata')) 
+            %figure(sampleCounter);
+            %plot(audiodata);
+        else
+            disp('Invalid audio data.'); 
+        end
+        
+        % build video/audio data set with clean frames
+        video_data_compressed(:,sampleCounter) = cleanVideo(videodata); 
+        audio_data_compressed(:,sampleCounter) = cleanAudio(audiodata); 
+        
+        both_data_compressed = [video_data_compressed; audio_data_compressed];
 
-        %load(audio); 
-        %if(exist('audiodata')) 
-        %    figure(2);
-        %    plot(audiodata);
-        %end
-        
-        % clean the video frames 
-        % grayscale
-        [~,~,~,n] = size(videodata);
-        for i = 1:n
-            vdata(:,:,i)=rgb2gray(im2double(videodata(:,:,:,i))); 
-            procdata(:,:,i) = vdata(121:end, 81:240, i);
-            data(:,:,i) = procdata(66:95, 51:110, i); 
-            %figure(i)
-            %imshow(data(:,:,i)); 
-        end
-        
-        % dump the data
-        data_compressed(:,sampleCounter) = data(:);
-        temp(sampleCounter) = uint8(D(charIndex).name) - 96;
+        % generate data labels from folder names
+        charIndex(sampleCounter) = uint8(D(charIndex).name) - 96;
         temp2 = zeros(26,1);
-        temp2(temp(sampleCounter))=1;
-        label(:,sampleCounter)=temp2;
-        
+        temp2(charIndex(sampleCounter)) = 1;
+        label(:,sampleCounter) = temp2;
+       
     end
     
 end
+
+save('cleanData/train.mat','video_data_compressed','audio_data_compressed',...
+        'both_data_compressed','label')
 

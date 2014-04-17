@@ -69,7 +69,7 @@ set(handles.video,'TimerPeriod', 0.05, 'TimerFcn', {@info_update});
 
 % Set video object parameters
 triggerconfig(handles.video,'manual');
-handles.video.FrameGrabInterval = 2;  % Capture every 5th frame
+handles.video.FrameGrabInterval = 2;  % Capture every other frame
 frameRate = 30; 
 captureTime = 1; 
 
@@ -164,10 +164,8 @@ if strcmp(get(handles.startAcquisition,'String'),'Start Acquisition')
       
       % Save to folder
       save( strcat(videopath, '/', num2str(num_vidsamples+1),'.mat'), 'videodata');
-      disp( strcat('Video saved to file ', videopath));
-      
       save( strcat(audiopath, '/', num2str(num_audsamples+1),'.mat'), 'audiodata');
-      disp( strcat('Audio saved to file ', audiopath));
+      disp( strcat('Audio/Video saved to file.'));
       
       % Restart the camera
       start(handles.video); 
@@ -218,28 +216,20 @@ function info_update(video, handles)
 % handles   structure with handles and user data (see GUIDATA)
 
 % Create image mask for lip centering box
-% Hardcoded for now
 xCenter = 80; 
 yCenter = 80;
 
 mask = double(ones(120, 160));
-mask(xCenter-15:xCenter+15, yCenter-30:yCenter+30) = 0; 
-mask(xCenter-13:xCenter+13, yCenter-28:yCenter+28) = 1;
-%mask = repmat(mask,[1,1,3]);
+mask(xCenter-15:xCenter+15, yCenter-23:yCenter+23) = 0; 
+mask(xCenter-13:xCenter+13, yCenter-21:yCenter+21) = 1;
 
 if(~isempty(gco))
     handles=guidata(gcf);  % Update handles
-    %size(mask);
-    %size(getsnapshot(handles.video))
     
-    % Get picture using GETSNAPSHOT and put it into axes using IMAGE
+    % Get picture, convert to grayscale, and add lip mask box
     rawimage = getsnapshot(handles.video);
-    %rawimage = rawimage(:,:,1); 
     rawimage = rgb2gray(im2double(rawimage));
-    
-    
     rawimage = fliplr((rawimage(121:end, 81:240))); 
-    %size(rawimage)
     imshow(rawimage.*mask);    
     
     % Remove tickmarks and labels that are inserted when using IMAGE
