@@ -1,39 +1,39 @@
 % Ryler Hockenbury
-% 4/9/2014
-% User interface for collecting audio/video samples. 
+% 4/17/2014
+% User interface for predicting characters from trained models. 
 
-function varargout = collectorGUI(varargin)
-% COLLECTORGUI MATLAB code for collectorGUI.fig
-%      COLLECTORGUI, by itself, creates a new COLLECTORGUI or raises the existing
+function varargout = predictorGUI(varargin)
+% PREDICTORGUI MATLAB code for predictorGUI.fig
+%      PREDICTORGUI, by itself, creates a new PREDICTORGUI or raises the existing
 %      singleton*.
 %
-%      H = COLLECTORGUI returns the handle to a new COLLECTORGUI or the handle to
+%      H = PREDICTORGUI returns the handle to a new PREDICTORGUI or the handle to
 %      the existing singleton*.
 %
-%      COLLECTORGUI('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in COLLECTORGUI.M with the given input arguments.
+%      PREDICTORGUI('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in PREDICTORGUI.M with the given input arguments.
 %
-%      COLLECTORGUI('Property','Value',...) creates a new COLLECTORGUI or raises the
+%      PREDICTORGUI('Property','Value',...) creates a new PREDICTORGUI or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the COLLECTORGUI before collectorGUI_OpeningFcn gets called.  An
+%      applied to the PREDICTORGUI before collectorGUI_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
 %      stop.  All inputs are passed to collectorGUI_OpeningFcn via varargin.
 %
-%      *See COLLECTORGUI Options on GUIDE's Tools menu.  Choose "COLLECTORGUI allows only one
+%      *See PREDICTORGUI Options on GUIDE's Tools menu.  Choose "PREDICTORGUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help collectorGUI
+% Edit the above text to modify the response to help predictorGUI
 
-% Last Modified by GUIDE v2.5 10-Apr-2014 02:18:58
+% Last Modified by GUIDE v2.5 17-Apr-2014 01:04:48
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @collectorGUI_OpeningFcn, ...
-                   'gui_OutputFcn',  @collectorGUI_OutputFcn, ...
+                   'gui_OpeningFcn', @predictorGUI_OpeningFcn, ...
+                   'gui_OutputFcn',  @predictorGUI_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -48,15 +48,15 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before collectorGUI is made visible.
-function collectorGUI_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before predictorGUI is made visible.
+function predictorGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to collectorGUI (see VARARGIN)
+% varargin   command line arguments to predictorGUI (see VARARGIN)
 
-% Choose default command line output for collectorGUI
+% Choose default command line output for predictorGUI
 handles.output = hObject;
 
 % Create audio object
@@ -69,9 +69,9 @@ set(handles.video,'TimerPeriod', 0.05, 'TimerFcn', {@info_update});
 
 % Set video object parameters
 triggerconfig(handles.video,'manual');
-handles.video.FrameGrabInterval = 2;  % Capture every 5th frame
+handles.video.FrameGrabInterval = 2;  % Capture every other frame
 frameRate = 30; 
-captureTime = 1.5; 
+captureTime = 1; 
 
 % Determine number of frames needed for desired duration
 handles.video.FramesPerTrigger = floor(captureTime * frameRate / handles.video.FrameGrabInterval);
@@ -79,12 +79,12 @@ handles.video.FramesPerTrigger = floor(captureTime * frameRate / handles.video.F
 % Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes collectorGUI wait for user response (see UIRESUME)
-uiwait(handles.collectorGUI);
+% UIWAIT makes predictorGUI wait for user response (see UIRESUME)
+uiwait(handles.predictorGUI);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = collectorGUI_OutputFcn(hObject, eventdata, handles) 
+function varargout = predictorGUI_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -95,9 +95,9 @@ handles.output = hObject;
 varargout{1} = handles.output;
 
 
-% --- Executes when user attempts to close collectorGUI.
-function collectorGUI_CloseRequestFcn(hObject, eventdata, handles)
-% hObject    handle to collectorGUI (see GCBO)
+% --- Executes when user attempts to close predictorGUI.
+function predictorGUI_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to predictorGUI (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -123,6 +123,12 @@ else
       set(handles.startStopCamera,'String','Start Camera')
       stop(handles.video)
       set(handles.startAcquisition,'Enable','off');
+      
+      % Clear any previous predictions
+      set(handles.predictChar,'Enable','off'); 
+      set(handles.aText,'String','Audio only predicts:');
+      set(handles.vText,'String','Video only predicts:');
+      set(handles.avText,'String','Audio & Video predicts:');
 end
 
 % --- Executes on button press in startAcquisition.
@@ -132,6 +138,13 @@ function startAcquisition_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 if strcmp(get(handles.startAcquisition,'String'),'Start Acquisition')
+        
+      % Clear any previous predictions
+      set(handles.predictChar,'Enable','off'); 
+      set(handles.aText,'String','Audio only predicts:');
+      set(handles.vText,'String','Video only predicts:');
+      set(handles.avText,'String','Audio & Video predicts:');
+    
       % Camera is not acquiring. Change button string and start acquisition.
       set(handles.startAcquisition,'Enable','off'); 
       set(handles.startAcquisition,'String','Acquiring...');
@@ -145,54 +158,20 @@ if strcmp(get(handles.startAcquisition,'String'),'Start Acquisition')
       % Save the acquired media
       set(handles.startAcquisition,'String','Saving...');
       
-      % Generate directory paths
-      index_selected = get(handles.charOptions,'Value');
-      list = get(handles.charOptions,'String');
-      char_selected = list{index_selected};
-      videopath = fullfile('rawTrain','video', char_selected);
-      audiopath = fullfile('rawTrain','audio', char_selected); 
-      
-      % Count other files in folder to determine index
-      D = dir([videopath, '\*.mat']);
-      num_vidsamples = length(D(not([D.isdir])));
-      
-      D = dir([audiopath, '\*.mat']);
-      num_audsamples = length(D(not([D.isdir])));
-      
+      path = fullfile('rawTest'); 
       videodata = getdata(handles.video);
       audiodata = getaudiodata(handles.audio);
       
       % Save to folder
-      save( strcat(videopath, '/', num2str(num_vidsamples+1),'.mat'), 'videodata');
-      disp( strcat('Video saved to file ', videopath));
-      
-      save( strcat(audiopath, '/', num2str(num_audsamples+1),'.mat'), 'audiodata');
-      disp( strcat('Audio saved to file ', audiopath));
+      save(strcat(path,'\testVideo.mat'), 'videodata');
+      save(strcat(path,'\testAudio.mat'), 'audiodata');
+      disp( strcat('Audio/Video saved to file.'));
       
       % Restart the camera
       start(handles.video); 
       set(handles.startAcquisition,'Enable','on'); 
+      set(handles.predictChar,'Enable','on'); 
       set(handles.startAcquisition,'String','Start Acquisition');
-end
-
-% --- Executes on selection change in charOptions.
-function charOptions_Callback(hObject, eventdata, handles)
-% hObject    handle to charOptions (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% empty
-
-% --- Executes during object creation, after setting all properties.
-function charOptions_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to charOptions (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: listbox controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
 end
 
 % --- Executes during object creation, after setting all properties.
@@ -212,34 +191,66 @@ function startStopCamera_CreateFcn(hObject, eventdata, handles)
 
 % empty
 
+% --- Executes on button press in predictChar.
+function predictChar_Callback(hObject, eventdata, handles)
+% hObject    handle to predictChar (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Need to process and classify the data in rawTest
+
+% load the data
+load('rawTest/testAudio.mat'); 
+load('rawTest/testVideo.mat');
+
+if(~exist('videodata')) 
+    disp('Invalid video data.');
+end
+        
+if(~exist('audiodata')) 
+    disp('Invalid audio data.'); 
+end
+
+% Clean up test data
+video_data_compressed = cleanVideo(videodata); 
+audio_data_compressed = cleanAudio(audiodata); 
+both_data_compressed = [video_data_compressed; audio_data_compressed];
+
+% Projection into reduced dim. space
+
+% Classification 
+
+% Post results to GUI
+aResult = 1; 
+vResult = 12; 
+avResult = 26; 
+
+set(handles.aText,'String', sprintf('Audio only predicts:  %s', char(aResult + 64)));
+set(handles.vText,'String', sprintf('Video only predicts:  %s', char(vResult + 64)))
+set(handles.avText,'String', sprintf('Audio & Video predicts:  %s', char(avResult + 64)))
+    
+
+
 % --- Executes on timed periodic callback. 
 function info_update(video, handles)
 % video     handle to inputvideo
 % handles   structure with handles and user data (see GUIDATA)
 
 % Create image mask for lip centering box
-% Hardcoded for now
 xCenter = 80; 
 yCenter = 80;
 
 mask = double(ones(120, 160));
-mask(xCenter-15:xCenter+15, yCenter-30:yCenter+30) = 0; 
-mask(xCenter-13:xCenter+13, yCenter-28:yCenter+28) = 1;
-%mask = repmat(mask,[1,1,3]);
+mask(xCenter-15:xCenter+15, yCenter-23:yCenter+23) = 0; 
+mask(xCenter-13:xCenter+13, yCenter-21:yCenter+21) = 1;
 
 if(~isempty(gco))
     handles=guidata(gcf);  % Update handles
-    size(mask)
-    %size(getsnapshot(handles.video))
     
-    % Get picture using GETSNAPSHOT and put it into axes using IMAGE
+    % Get picture, convert to grayscale, and add lip mask box
     rawimage = getsnapshot(handles.video);
-    %rawimage = rawimage(:,:,1); 
     rawimage = rgb2gray(im2double(rawimage));
-    
-    
     rawimage = fliplr((rawimage(121:end, 81:240))); 
-    %size(rawimage)
     imshow(rawimage.*mask);    
     
     % Remove tickmarks and labels that are inserted when using IMAGE
@@ -247,3 +258,6 @@ if(~isempty(gco))
 else
     delete(imaqfind);   % Clean up - delete any image acquisition objects
 end
+
+
+
