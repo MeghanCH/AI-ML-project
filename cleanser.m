@@ -5,8 +5,8 @@
 % close all
 
 % check we can load data samples
-videodirpath = fullfile('rawTrain','video');
-audiodirpath = fullfile('rawTrain','audio'); 
+videodirpath = fullfile('rawTest','video');
+audiodirpath = fullfile('rawTest','audio'); 
       
 % Count other files in folder to determine index
 D = dir(videodirpath);
@@ -53,17 +53,17 @@ for charIndex=3:length(D);
         for i = 1:n
             vdata(:,:,i)=rgb2gray(im2double(videodata(:,:,:,i))); 
             procdata(:,:,i) = vdata(121:end, 81:240, i);
-            data(:,:,i) = procdata(66:95, 51:110, i); 
-            %figure(i)
-            %imshow(data(:,:,i)); 
+            data(:,:,i) = procdata(66:95, 58:103, i); 
+%             figure(i)
+%             imshow(data(:,:,i)); 
         end
         
         % dump the data
-        data_compressed(:,sampleCounter) = data(:);
+        test_data_compressed(:,sampleCounter) = data(:);
         temp(sampleCounter) = uint8(D(charIndex).name) - 96;
         temp2 = zeros(26,1);
         temp2(temp(sampleCounter))=1;
-        label(:,sampleCounter)=temp2;
+        test_label(:,sampleCounter)=temp2;
         
     end
     

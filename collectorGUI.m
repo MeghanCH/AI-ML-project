@@ -151,8 +151,8 @@ if strcmp(get(handles.startAcquisition,'String'),'Start Acquisition')
       char_selected = list{index_selected};
       
       % currently in test folder
-      videopath = fullfile('rawTrain','video', char_selected);
-      audiopath = fullfile('rawTrain','audio', char_selected); 
+      videopath = fullfile('rawTest','video', char_selected);
+      audiopath = fullfile('rawTest','audio', char_selected); 
       
       % Count other files in folder to determine index
       D = dir([videopath, '\*.mat']);
@@ -228,8 +228,8 @@ xCenter = 80;
 yCenter = 80;
 
 mask = double(ones(120, 160));
-mask(xCenter-15:xCenter+15, yCenter-30:yCenter+30) = 0; 
-mask(xCenter-13:xCenter+13, yCenter-28:yCenter+28) = 1;
+mask(xCenter-15:xCenter+15, yCenter-23:yCenter+23) = 0; 
+mask(xCenter-13:xCenter+13, yCenter-21:yCenter+21) = 1;
 %mask = repmat(mask,[1,1,3]);
 
 if(~isempty(gco))

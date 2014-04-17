@@ -1,5 +1,5 @@
 %% train
-[eigenvectors, weights,~,~,variance] = pca(data_compressed');
+[eigenvectors,weights,~,~,variance] = pca(data_compressed');
 m = mean(data_compressed');
 s = 0;
 count = 1;
@@ -9,10 +9,13 @@ while (s<90)
 end
 data_projected = weights(:,1:count);
 %train neural network
-% setdemorandstream(491218382);
-net = feedforwardnet(100);
+setdemorandstream(491218382);
+net = feedforwardnet(50);
+net.divideParam.trainRatio = 0.99;
+net.divideParam.valRatio = 0.01;
+net.divideParam.testRatio = 0;
 [net,tr]=train(net,data_projected',label);
-
+% save('net.mat','net')
 % svmstruct = svmtrain(data_projected,vec2ind(label));
 
 %% test
