@@ -19,25 +19,33 @@ end
 
 % set up a box filter
 width = 4000; 
-filterLength = 24000; 
+filterLength = 30000; 
 audioData = zeros(1,width); 
 
 filter = zeros(1,filterLength);
 filter(filterLength/2 - width/2:filterLength/2 + width/2) = 1;
 
-% align center of box with signal peak
+tempData = zeros(1,filterLength); 
+
+if(n <= filterLength)
+    tempData(1:n) = inputData; 
+else
+    disp('Need longer filter length.'); 
+end
+
+% align signal peak with center of box
 shift = floor(filterLength/2 - peakIndex);
-filter = circshift(filter', -shift);
+tempData = circshift(tempData(:), shift);
 
-inputData(n:filterLength) = 0; 
-temp = filter.*inputData; 
-audioData = temp(filterLength/2 - shift - width/2: filterLength/2 - shift + width/2); 
+temp = filter.*tempData'; 
+audioData = temp(filterLength/2 - width/2 + 1: filterLength/2 + width/2); 
 
-% visualize filter
+%visualize filter
 % subplot(2,1,1)
 % plot(filter,'r');
 % hold on
-% plot(inputData,'b'); 
+% plot(tempData,'b'); 
+% hold on
 % 
 % subplot(2,1,2)
 % plot(audioData); 
