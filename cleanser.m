@@ -44,19 +44,19 @@ for charIndex=3:length(D);
         video_data_compressed(:,sampleCounter) = cleanVideo(videodata); 
         audio_data_compressed(:,sampleCounter) = cleanAudio(audiodata); 
         
-        both_data_compressed = [video_data_compressed; audio_data_compressed];
+%         both_data_compressed = [video_data_compressed; audio_data_compressed];
 
-        % generate data labels from folder names
-        charIndex(sampleCounter) = uint8(D(charIndex).name) - 96;
-        temp = zeros(26,1);
-        temp(charIndex(sampleCounter)) = 1;
-        label(:,sampleCounter) = temp;
+        % generate data labels from folder names        
+        temp(sampleCounter) = uint8(D(charIndex).name) - 96;
+        temp2 = zeros(26,1);
+        temp2(temp(sampleCounter))=1;
+        label(:,sampleCounter)=temp2;
        
     end
     
 end
 
 save('cleanData/train.mat','video_data_compressed','audio_data_compressed',...
-        'both_data_compressed','label')
+        'label')
 
 

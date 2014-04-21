@@ -2,8 +2,8 @@
 % Train neural network
 
 %% PCA 
-[eigenvectors,weights,~,~,variance] = pca(data_compressed');
-data_mean = mean(data_compressed');
+[eigenvectors,weights,latent,~,variance] = pca(audio_data_compressed');
+data_mean = mean(audio_data_compressed');
 s = 0;
 count = 1;
 while (s<90)
@@ -23,13 +23,13 @@ net.divideParam.testRatio = 0;
 % save('models/videoModel.mat','net', 'data_mean', 'eigenvectors','count')
 
 %% Testing
-test_data_compressed_mean = bsxfun(@minus,test_data_compressed',data_mean);
-weights_test_data = test_data_compressed_mean*eigenvectors(:,1:count);
-test_y = net(weights_test_data');
-test_l = vec2ind(test_y);
-
-% test_y = net(data_projected');
+% test_data_compressed_mean = bsxfun(@minus,test_data_compressed',data_mean);
+% weights_test_data = test_data_compressed_mean*eigenvectors(:,1:count);
+% test_y = net(weights_test_data');
 % test_l = vec2ind(test_y);
+
+test_y = net(data_projected');
+test_l = vec2ind(test_y);
 
 % test_l = svmclassify(svmstruct,data_projected);
 %% manual  neural network running variable
