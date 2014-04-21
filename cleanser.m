@@ -1,7 +1,7 @@
 
 % Post process video/audio samples and save compressed data
 
-folder = 'rawTrain'; 
+folder = 'Data'; 
 videodirpath = fullfile(folder,'video');
 audiodirpath = fullfile(folder,'audio'); 
 
@@ -56,7 +56,7 @@ for charIndex=3:length(D);
     
 end
 
-save('cleanData/train.mat','video_data_compressed','audio_data_compressed',...
+save('cleanData/data.mat','video_data_compressed','audio_data_compressed',...
         'label')
 
 

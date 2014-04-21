@@ -1,9 +1,7 @@
-
-% Train neural network
-
-%% PCA 
-[eigenvectors,weights,latent,~,variance] = pca(audio_data_compressed');
-data_mean = mean(audio_data_compressed');
+function [net,options,data_mean,count,eigenvectors] = learner(data,label)
+% PCA 
+[eigenvectors,weights,latent,~,variance] = pca(data');
+data_mean = mean(data');
 s = 0;
 count = 1;
 while (s<90)
@@ -11,29 +9,19 @@ while (s<90)
     count = count+1;
 end
 data_projected = weights(:,1:count);
+% Train neural network
 
-%% Train neural network
-setdemorandstream(491218382);
-net = feedforwardnet(50);
-net.divideParam.trainRatio = 0.99;
-net.divideParam.valRatio = 0.01;
-net.divideParam.testRatio = 0;
-[net,tr]=train(net,data_projected',label);
+% setdemorandstream(491218382);
+% net = feedforwardnet(50);
+% net.divideParam.trainRatio = 0.99;
+% net.divideParam.valRatio = 0.01;
+% net.divideParam.testRatio = 0;
+% [net,tr]=train(net,data_projected',label);
 
-% save('models/videoModel.mat','net', 'data_mean', 'eigenvectors','count')
+net = mlp(count,100,26,'logistic');
+options = zeros(1,18);
+options(1)=1; %display iteration values
+options(14)=1000; %maximum number of training cycles (epochs)
 
-%% Testing
-% test_data_compressed_mean = bsxfun(@minus,test_data_compressed',data_mean);
-% weights_test_data = test_data_compressed_mean*eigenvectors(:,1:count);
-% test_y = net(weights_test_data');
-% test_l = vec2ind(test_y);
-
-test_y = net(data_projected');
-test_l = vec2ind(test_y);
-
-% test_l = svmclassify(svmstruct,data_projected);
-%% manual  neural network running variable
-
-d = data_projected';
-t = weights_test_data';
-
+[net,options]=netopt(net,options,data_projected,label','scg');
+end
