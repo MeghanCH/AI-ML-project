@@ -1,7 +1,7 @@
 
 % Post process video/audio samples and save compressed data
 
-folder = 'Data'; 
+folder = 'rawData'; 
 videodirpath = fullfile(folder,'video');
 audiodirpath = fullfile(folder,'audio'); 
 
@@ -44,7 +44,7 @@ for charIndex=3:length(D);
         video_data_compressed(:,sampleCounter) = cleanVideo(videodata); 
         audio_data_compressed(:,sampleCounter) = cleanAudio(audiodata); 
         
-%         both_data_compressed = [video_data_compressed; audio_data_compressed];
+        %both_data_compressed = [video_data_compressed; audio_data_compressed];
 
         % generate data labels from folder names        
         temp(sampleCounter) = uint8(D(charIndex).name) - 96;

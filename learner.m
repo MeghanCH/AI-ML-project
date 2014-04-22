@@ -1,4 +1,4 @@
-function [net,options,data_mean,count,eigenvectors] = learner(data,label)
+function [net,options,data_mean,count,eigenvectors] = learner(data,label,numNodes,numIter)
 % PCA 
 [eigenvectors,weights,latent,~,variance] = pca(data');
 data_mean = mean(data');
@@ -8,7 +8,9 @@ while (s<90)
     s = s+variance(count);
     count = count+1;
 end
+
 data_projected = weights(:,1:count);
+
 % Train neural network
 
 % setdemorandstream(491218382);
@@ -18,10 +20,15 @@ data_projected = weights(:,1:count);
 % net.divideParam.testRatio = 0;
 % [net,tr]=train(net,data_projected',label);
 
-net = mlp(count,100,26,'logistic');
+net = mlp(count,numNodes,26,'logistic');
 options = zeros(1,18);
-options(1)=1; %display iteration values
-options(14)=1000; %maximum number of training cycles (epochs)
+%options(1)= 1; % display iteration values
+options(14)= numIter; % maximum number of training cycles (epochs)
 
-[net,options]=netopt(net,options,data_projected,label','scg');
+[net,options] = netopt(net,options,data_projected,label','scg');
+
+% save the model when we have a good one 
+%save('models/audio.mat','net', 'options', 'data_mean', 'count', ...
+%        'eigenvectors'); 
+
 end

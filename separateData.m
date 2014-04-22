@@ -1,8 +1,21 @@
-load('E:\Documents\MATLAB\24-787\av character classification\cleanData\data.mat')
-%% separate data into train and test
-p = randperm(size(video_data_compressed,2));
-idx_train = p(1:(size(video_data_compressed,2)-50));
-idx_test = p((length(idx_train)+1):end);
+
+% Seperate clean data into training and testing set
+
+%% load
+load('cleanData/data.mat')
+
+%% Seperate
+
+percentTrain = 70;
+percentTest =  30; 
+
+numSamples = size(video_data_compressed,2); 
+numTrainSamples = floor(70/100*numSamples); 
+numTestSamples = numSamples - numTrainSamples; 
+
+p = randperm(numSamples);
+idx_train = p(1:numTrainSamples);
+idx_test = p((numTrainSamples + 1):end);
 
 %training data
 train_audio = audio_data_compressed(:,idx_train);
