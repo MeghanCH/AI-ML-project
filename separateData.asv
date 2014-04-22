@@ -10,7 +10,7 @@ percentTrain = 70;
 percentTest =  30; 
 numCharSamples = 29; 
 numChars = 26; 
-numSamples = size(video_data_compressed,2);
+numSamples = size(video_data_compressed,2); 
 
 numTrainSamplesPerChar = floor(percentTrain/100*numSamples/numChars) 
 numTestSamplesPerChar = numCharSamples - numTrainSamplesPerChar
@@ -27,9 +27,9 @@ for ii=1:26
     idx_train = p(1:numTrainSamplesPerChar); 
     idx_test = p((numTrainSamplesPerChar + 1):end); 
     
-    current_letter_audio = audio_data_compressed(:,ii*numCharSamples-numCharSamples+1:ii*numCharSamples);
-    current_letter_video = video_data_compressed(:,ii*numCharSamples-numCharSamples+1:ii*numCharSamples);
-    current_letter_label = label(:,ii*numCharSamples-numCharSamples+1:ii*numCharSamples);
+    current_letter_audio = audio_data_compressed(:,ii*numCharsSamples-numChars+1:ii*numChars);
+    current_letter_video = video_data_compressed(:,ii*numChars-numChars+1:ii*numChars);
+    current_letter_label = label(:,ii*numChars-numChars+1:ii*numChars);
     
     %train data
     train_audio = [train_audio current_letter_audio(:,idx_train)];
